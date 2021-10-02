@@ -1,19 +1,31 @@
 import React from 'react';
 import useCart from '../../hooks/useCart';
 import useProducts from '../../hooks/useProducts';
+import { removeFromDb } from '../../utilities/fakedb';
 import Cart from '../Cart/Cart';
+import OrderItem from '../OrderItem/OrderItem';
 
 
 const OrderReview = () => {
     const [products] = useProducts();
-    const [cart] = useCart(products);
+    const [cart, setCart] = useCart(products);
+
+    const handleRemoveItem = (key) => {
+        const newCart = cart.filter(product => product.key !== key)
+        setCart(newCart)
+        removeFromDb(key)
+    }
+
     return (
         <div className='shop-container'>
             <div className="product-container">
-                <h1>{products.length}</h1>
-                <h2>{cart.length}</h2>
-                <h2>This is Order Review Page here ...</h2>
-
+                {
+                    cart.map(product => <OrderItem
+                        key={product.key}
+                        product={product}
+                        handleRemoveItem={handleRemoveItem}
+                    ></OrderItem>)
+                }
             </div>
             <div className="cart-container">
                 <Cart cart={cart}></Cart>
